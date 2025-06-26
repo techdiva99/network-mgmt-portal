@@ -227,8 +227,8 @@ def create_footer(crewai_available=False):
             Version 2.0.0 (AI Enhanced) • {datetime.now().strftime("%Y-%m-%d")} • 
             CrewAI Framework: {"Available" if crewai_available else "Mock Mode"}
         </p-->
-        <p style="margin: 0.3rem 0 0 0; font-size: 0.9rem; opacity: 0.7;">
-            AI Team Contact: <strong>hsa_ai_team@humana.com</strong>
+        <!--p style="margin: 0.3rem 0 0 0; font-size: 0.9rem; opacity: 0.7;">
+            AI Team Contact: <strong>hsa_ai_team@humana.com</strong-->
         </p>
     </div>
     """
