@@ -26,9 +26,8 @@ from .visualizations import (
     create_state_performance_chart,
     create_us_map_choropleth
 )
-from .layouts import (
-    render_network_intelligence_tab,
-    render_optimization_summary_tab
+from .network_intelligence_tab import (
+    render_network_intelligence_tab
 )
 from .network_builder_components import *
 
@@ -53,6 +52,11 @@ except ImportError:
 
 try:
     from .geographic_optimization_tab import render_geographic_optimization_tab
+except ImportError:
+    pass
+
+try:
+    from .optimization_summary_tab import render_optimization_summary_tab
 except ImportError:
     pass
 

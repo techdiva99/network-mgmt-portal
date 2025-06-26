@@ -3,7 +3,8 @@
 Centralized tab rendering and management
 """
 import streamlit as st
-from ui.layouts import render_network_intelligence_tab, render_optimization_summary_tab
+from ui.network_intelligence_tab import render_network_intelligence_tab
+from ui.optimization_summary_tab import render_optimization_summary_tab
 from ui.competitive_analysis_tab import render_competitive_analysis_tab
 from ui.geographic_optimization_tab import render_geographic_optimization_tab
 from ui.network_builder import render_network_builder_tab
