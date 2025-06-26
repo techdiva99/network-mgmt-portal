@@ -40,5 +40,5 @@ STATUS_COLORS = {
 
 def get_logo_html(logo_path="logo.png", width=60, height=60):
     """Generate HTML for logo display"""
-    return f'<div style="width: {width}px; height: {height}px; background: {BRAND_COLORS["primary_blue"]}; border-radius: 8px; margin-right: 15px; display: inline-flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 20px;">HSA</div>'
+    return f'<div style="width: {width}px; height: {height}px; background: {BRAND_COLORS["primary_blue"]}; border-radius: 8px; margin-right: 15px; display: inline-flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 20px;">NHX</div>'
 
