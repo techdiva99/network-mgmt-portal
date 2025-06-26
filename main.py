@@ -60,33 +60,35 @@ def render_main_content(sidebar_data):
         
         # Execute analysis using orchestrator
         try:
+            # Only show spinner while analysis is running
             with st.spinner("🤖 AI Agents are analyzing your provider network..."):
                 results = orchestrator.execute_agent_analysis(sidebar_data['filters'])
-            # Load and process data for visualization
+            # After spinner, show results and UI
             df = pd.DataFrame(results["data_analysis"]["data"])
             df = add_quadrant_analysis(df)
 
-            # Display success message and info on one line, with a light green background (success color)
-            short_time = pd.to_datetime(results['timestamp']).strftime('%H:%M:%S')
-            st.markdown(
-                '<div style="display: flex; flex-direction: row; align-items: center; gap: 1em; margin-bottom: 1.5em; background-color: #d4edda; border: 1px solid #c3e6cb; border-radius: 6px; padding: 0.75em 1em;">'
-                '    <span style="font-size: 1.1em; text-align: left; min-width: 270px;">✅ <b>AI Agent Analysis Complete!</b></span>'
-                '    <span style="font-size: 1.1em; text-align: right ; min-width: 270px;"">✅ <b>Processed</b> <b>{}</b> providers</span>'
-                '    <span style="font-size: 1.1em; text-align: right ; min-width: 270px;" ">⏰ <b>Completed at</b> {}</span>'
-                '</div>'.format(len(df), short_time),
-                unsafe_allow_html=True
-            )
-
-            # Show agent status in 4 columns inside an expander with the same header as the summary bar
-            with st.expander('AI Agent Analysis Complete! | Processed {} providers | Completed at {}'.format(len(df), short_time), expanded=False):
-                agent_status = st.session_state.get('agent_status', {})
-                agent_names = list(agent_status.keys())
-                agent_cols = st.columns(4)
+            # Set all agent statuses to 'success' after run
+            if 'agent_status' in st.session_state:
+                for agent in st.session_state.agent_status:
+                    st.session_state.agent_status[agent] = 'success'
+            agent_status = st.session_state.get('agent_status', {})
+            agent_names = list(agent_status.keys())
+            agent_cols = st.columns(4)
+            with st.expander('🤖 AI Agent Processing Status', expanded=False):
                 for idx, agent in enumerate(agent_names):
                     with agent_cols[idx % 4]:
                         status = agent_status[agent]
-                        icon = '✅' if status == 'success' else ('⏳' if status == 'waiting' else '❌')
-                        st.markdown(f'<div style="border-radius: 5px; padding: 0.5em; text-align: center; margin-bottom: 0.5em;">{icon} <b>{agent}</b><br><span style=\'font-size:0.9em;\'>{status.capitalize()}</span></div>', unsafe_allow_html=True)
+                        # Only show status if not 'success', else show a checkmark and 'Complete'
+                        if status == 'success':
+                            icon = '✅'
+                            status_text = 'Complete'
+                        elif status == 'waiting':
+                            icon = '⏳'
+                            status_text = 'Waiting'
+                        else:
+                            icon = '❌'
+                            status_text = status.capitalize()
+                        st.markdown(f'<div style="border-radius: 5px; padding: 0.5em; text-align: center; margin-bottom: 0.5em;">{icon} <b>{agent}</b><br><span style="font-size:0.9em;">{status_text}</span></div>', unsafe_allow_html=True)
 
             # Calculate and display metrics
             metrics = calculate_network_metrics(df)
