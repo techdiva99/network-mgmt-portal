@@ -261,14 +261,14 @@ def render_custom_header():
     st.markdown(f"""
     <div class="custom-header" id="main-header">
         <div class="header-content">
-            {get_logo_html("logo.png", 50, 50)}
+            {get_logo_html("logo.png", 50, 50, 'header_left')}
             <div>
                 <h1 class="header-title">Network Optimization Portal</h1>
                 <p class="header-subtitle">Advanced Provider Analytics & AI Agent Intelligence</p>
             </div>
         </div>
         <div>
-            <img src="data/logo.png" alt="Logo" style="height:50px; width:50px; margin-right:16px;"  />
+            {get_logo_html("logo.png", 50, 50, 'header_right')}
         </div>
     </div>
 

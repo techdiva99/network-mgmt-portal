@@ -38,7 +38,20 @@ STATUS_COLORS = {
     'Low': BRAND_COLORS['success']
 }
 
-def get_logo_html(logo_path="logo.png", width=60, height=60):
-    """Generate HTML for logo display"""
-    return f'<div style="width: {width}px; height: {height}px; background: {BRAND_COLORS["primary_blue"]}; border-radius: 8px; margin-right: 15px; display: inline-flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 20px;">NHX</div>'
+import base64
+import os
+
+def get_logo_html(logo_path="logo.png", width=60, height=60, type='header_right'):
+    """Generate HTML for logo display using base64 encoding for Streamlit compatibility"""
+    if type=='header_left':
+        return f'<div style="width: {width}px; height: {height}px; background: {BRAND_COLORS["primary_blue"]}; border-radius: 8px; margin-right: 15px; display: inline-flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 20px;">NMX</div>'
+    else:
+        logo_full_path = os.path.join(os.path.dirname(__file__), "..", "data", logo_path)
+        try:
+            with open(logo_full_path, "rb") as image_file:
+                encoded = base64.b64encode(image_file.read()).decode()
+            return f'<img src="data:image/png;base64,{encoded}" width="{width}" height="{height}" style="margin-right: 15px; border-radius: 8px; display: inline-flex; vertical-align: middle;" alt="Logo" />'
+        except Exception as e:
+            # fallback to text if image not found
+            return f'<div style="width: {width}px; height: {height}px; background: {BRAND_COLORS["primary_blue"]}; border-radius: 8px; margin-right: 15px; display: inline-flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 20px;">NMX</div>'
 
