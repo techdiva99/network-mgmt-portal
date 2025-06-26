@@ -74,7 +74,37 @@ def render_optimization_summary_tab(df, results):
         st.info("Detailed financial impact analysis will be available after quadrant analysis completion.")
 
     st.markdown("---")
-    
+    st.markdown("### Analysis Results")
+    # Display some basic results in an expandable 2x2 grid
+    if 'quadrant_summary' in results.get('quadrant_analysis', {}):
+        with st.expander('Provider Quadrants (click to expand)', expanded=False):
+            st.markdown('#### Provider Quadrants')
+            quadrant_colors = {
+                'High Quality / Low Cost': '#E8F5E9',
+                'High Quality / High Cost': '#FFFDE7',
+                'Low Quality / Low Cost': '#E3F2FD',
+                'Low Quality / High Cost': '#FFEBEE',
+            }
+            quadrant_descriptions = {
+                'High Quality / Low Cost': '⭐️ Best value providers: maintain and prioritize.',
+                'High Quality / High Cost': '💰 High performers but expensive: consider for negotiation.',
+                'Low Quality / Low Cost': '⚖️ Low cost but quality concerns: monitor closely.',
+                'Low Quality / High Cost': '⚠️ Underperformers and costly: primary candidates for removal.',
+            }
+            quadrant_items = list(results['quadrant_analysis']['quadrant_summary'].items())
+            grid = st.columns(2)
+            for i, (quadrant, count) in enumerate(quadrant_items):
+                color = quadrant_colors.get(quadrant, '#F5F5F5')
+                description = quadrant_descriptions.get(quadrant, '')
+                with grid[i // 2]:
+                    st.markdown(f"""
+                        <div style='background: {color}; border-left: 5px solid #2196F3; padding: 1rem; margin: 0.5rem 0; border-radius: 6px; min-height: 100px;'>
+                        <b>{quadrant}</b><br>
+                        <span style='font-size:1.3em;'><b>{count}</b> providers</span><br>
+                        <span style='font-size:1em;'>{description}</span>
+                        </div>
+                    """, unsafe_allow_html=True)
+    st.markdown("---")                        
     # Show recommendations if available
     if removal_candidates or addition_candidates:
         col_left, col_right = st.columns([1, 1])

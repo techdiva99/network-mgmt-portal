@@ -59,34 +59,64 @@ def render_main_content(sidebar_data):
         orchestrator = AnalysisOrchestrator()
         
         # Execute analysis using orchestrator
-        with st.spinner("🤖 AI Agents are analyzing your provider network..."):
-            results = orchestrator.execute_agent_analysis(sidebar_data['filters'])
-        
-        # Display success message
-        st.success("AI Agent Analysis Complete!")
-        
-        # Load and process data for visualization
-        df = pd.DataFrame(results["data_analysis"]["data"])
-        df = add_quadrant_analysis(df)
-        
-        # Calculate and display metrics
-        metrics = calculate_network_metrics(df)
-        display_metrics_row(metrics)
-        
-        # Render analysis tabs
-        render_analysis_tabs(df, results, metrics)
+        try:
+            with st.spinner("🤖 AI Agents are analyzing your provider network..."):
+                results = orchestrator.execute_agent_analysis(sidebar_data['filters'])
+            # Load and process data for visualization
+            df = pd.DataFrame(results["data_analysis"]["data"])
+            df = add_quadrant_analysis(df)
 
-        # Simple results display (until tab_manager is created)
-        st.markdown("### Analysis Results")
-        st.write(f"✅ Processed {len(df)} providers")
-        st.write(f"✅ Analysis completed at {results['timestamp']}")
+            # Display success message and info on one line, with a light green background (success color)
+            short_time = pd.to_datetime(results['timestamp']).strftime('%H:%M:%S')
+            st.markdown(
+                '<div style="display: flex; flex-direction: row; align-items: center; gap: 1em; margin-bottom: 1.5em; background-color: #d4edda; border: 1px solid #c3e6cb; border-radius: 6px; padding: 0.75em 1em;">'
+                '    <span style="font-size: 1.1em; text-align: left; min-width: 270px;">✅ <b>AI Agent Analysis Complete!</b></span>'
+                '    <span style="font-size: 1.1em; text-align: right ; min-width: 270px;"">✅ <b>Processed</b> <b>{}</b> providers</span>'
+                '    <span style="font-size: 1.1em; text-align: right ; min-width: 270px;" ">⏰ <b>Completed at</b> {}</span>'
+                '</div>'.format(len(df), short_time),
+                unsafe_allow_html=True
+            )
+
+            # Show agent status in 4 columns inside an expander with the same header as the summary bar
+            with st.expander('AI Agent Analysis Complete! | Processed {} providers | Completed at {}'.format(len(df), short_time), expanded=False):
+                agent_status = st.session_state.get('agent_status', {})
+                agent_names = list(agent_status.keys())
+                agent_cols = st.columns(4)
+                for idx, agent in enumerate(agent_names):
+                    with agent_cols[idx % 4]:
+                        status = agent_status[agent]
+                        icon = '✅' if status == 'success' else ('⏳' if status == 'waiting' else '❌')
+                        st.markdown(f'<div style="border-radius: 5px; padding: 0.5em; text-align: center; margin-bottom: 0.5em;">{icon} <b>{agent}</b><br><span style=\'font-size:0.9em;\'>{status.capitalize()}</span></div>', unsafe_allow_html=True)
+
+            # Calculate and display metrics
+            metrics = calculate_network_metrics(df)
+            display_metrics_row(metrics)
+            
+            # Render analysis tabs
+            render_analysis_tabs(df, results, metrics)
+
+            # # Collapsible section for analysis results and agent progress
+            # with st.expander("AI Agent Processing & Results", expanded=False):
+            #     # Two-column layout for agent progress and analysis results
+            #     col1, col2 = st.columns(2)
+            #     with col1:
+            #         st.markdown("#### Agent Progress")
+            #         agent_status = st.session_state.get('agent_status', {})
+            #         for agent, status in agent_status.items():
+            #             st.write(f"- **{agent}**: {status}")
+            #     with col2:
+            #         st.markdown("### Analysis Results")
+            #         # st.write(f"✅ Processed {len(df)} providers")
+            #         # st.write(f"✅ Analysis completed at {results['timestamp']}")
+            #         # Display some basic results
+            #         if 'quadrant_summary' in results['quadrant_analysis']:
+            #             st.markdown("#### Provider Quadrants")
+            #             for quadrant, count in results['quadrant_analysis']['quadrant_summary'].items():
+            #                 st.write(f"• {quadrant}: {count} providers")
         
-        # Display some basic results
-        if 'quadrant_summary' in results['quadrant_analysis']:
-            st.markdown("#### Provider Quadrants")
-            for quadrant, count in results['quadrant_analysis']['quadrant_summary'].items():
-                st.write(f"• {quadrant}: {count} providers")
-        
+        except Exception as e:
+            st.error(f"❌ An error occurred during analysis: {str(e)}")
+            st.stop()
     else:
         # Show welcome screen
         st.markdown(create_welcome_screen(), unsafe_allow_html=True)
