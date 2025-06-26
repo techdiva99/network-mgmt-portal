@@ -267,8 +267,8 @@ def render_custom_header():
                 <p class="header-subtitle">Advanced Provider Analytics & AI Agent Intelligence</p>
             </div>
         </div>
-        <div style="color: {BRAND_COLORS['primary_blue']}; font-weight: 700; font-size: 1.1rem;">
-            OneHome × Humana
+        <div>
+            <img src="data/logo.png" alt="Logo" style="height:50px; width:50px; margin-right:16px;"  />
         </div>
     </div>
 
